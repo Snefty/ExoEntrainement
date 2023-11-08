@@ -5,10 +5,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import serverConnection.myConnection;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Servlet implementation class MyServlet
@@ -56,6 +59,10 @@ public class MyServlet extends HttpServlet {
 	private void doInscription(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int idCompte = -1;
 		
+		HttpSession session = request.getSession();
+		String result;
+		Map<String,String> erreurs = new HashMap<String, String>();
+		
 		String nom = request.getParameter("nom");
 		String prenom = request.getParameter("prenom");
 		String adresse = request.getParameter("adr");
@@ -64,13 +71,30 @@ public class MyServlet extends HttpServlet {
 		String sexe = request.getParameter("sexe");
 		String password = request.getParameter("pwd");
 		
+		//VALIDATION
 		try {
-			validationAge(age);
-			validationNomination(password);
+			this.validationAge(age);
 		} catch (Exception e) {
-			e.printStackTrace();
+			erreurs.put(age + "", e.getMessage());
 		}
-
+		try {
+			this.validationNomination(nom);
+		} catch (Exception e) {
+			erreurs.put(nom, e.getMessage());
+		}
+		try {
+			this.validationNomination(prenom);
+		} catch (Exception e) {
+			erreurs.put(prenom, e.getMessage());
+		}
+		try {
+			this.validationMotDePasse(password);
+		} catch (Exception e) {
+			erreurs.put(password + "", e.getMessage());
+		}
+		
+		if(erreurs.isEmpty()) {
+			result = "Succès de l'inscription";
 			if(mC.exist(nom, prenom) == false){
 				idCompte = mC.creationCompte(prenom, password);
 				mC.creationUser(nom, prenom, adresse, tel, age, sexe, idCompte);
@@ -78,7 +102,14 @@ public class MyServlet extends HttpServlet {
 			}else {
 				request.getRequestDispatcher("/inscription.jsp").forward(request, response);
 			}
-			request.getRequestDispatcher("/inscription.jsp").forward(request, response);
+		}else {
+			result = "Echec de l'inscription";
+		}
+			
+		request.setAttribute("erreurs", erreurs);
+		request.setAttribute("resultat", result);
+		// Redirection
+		request.getRequestDispatcher("/inscription.jsp").forward(request, response);
 	}
 	
 	public void validationAge(int age) throws Exception {

@@ -30,7 +30,7 @@
 
 					<div class="form-group">
 						<label class="form-label mt-4">Adresse :</label> <input
-							type="text" class="form-control" id="adr" name="adr"
+							type="email" class="form-control" id="adr" name="adr"
 							placeholder="Enter adresse">
 					</div>
 
@@ -64,6 +64,7 @@
 						class="btn btn-primary" value="reset">
 
 					 <div class="container aqua">
+					 <!-- Structure if tertiaire -->
 						<p class="${empty erreurs ? 'succes' : 'erreur'}">${resultat}</p>
 					</div>
 				</fieldset>
