@@ -10,10 +10,6 @@
 </head>
 <body>
 	
-	<%
-	
-	%>
-	
 	<h1>Connection Simple</h1>
 
 	<div class="container">

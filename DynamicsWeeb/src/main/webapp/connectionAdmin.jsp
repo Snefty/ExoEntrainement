@@ -4,11 +4,27 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet"
+	href="css/bootstrap.min.css">
 <title>JakartaEE</title>
 </head>
 <body>
 
-<h1>Connection admin</h1>
+	<h1>Connection admin</h1>
+
+	<div class="container">
+		<div class="d-grid gap-3">
+			<a href="inventaire.jsp" class="btn btn-info">
+				Verifier Articles			
+			</a> 
+			<a href="modifierCompte.jsp" class="btn btn-success">
+				Ajouter Article				
+			</a> 
+			<a href="inscription.jsp" class="btn btn-danger">
+				Supprimer un compte
+			</a> 
+		</div>
+	</div>
 
 
 </body>

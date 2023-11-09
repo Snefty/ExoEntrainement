@@ -30,7 +30,7 @@
 
 					<div class="form-group">
 						<label class="form-label mt-4">Adresse :</label> <input
-							type="email" class="form-control" id="adr" name="adr"
+							type="text" class="form-control" id="adr" name="adr"
 							placeholder="Enter adresse">
 					</div>
 
