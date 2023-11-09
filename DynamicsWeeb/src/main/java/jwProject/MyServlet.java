@@ -51,7 +51,15 @@ public class MyServlet extends HttpServlet {
 			}
 		}
 	}
-
+	
+	/*
+	private void doSupprimer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
+		
+	}
+	*/
+	
+	// LA PAGE RECREER DES ARTICLES EN BOUCLE FAIRE GAFFE
+	
 	private void doCreer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
 		@SuppressWarnings("unused")
 		HttpSession session = request.getSession(true);
@@ -60,8 +68,9 @@ public class MyServlet extends HttpServlet {
 		int prixUnitaire = Integer.parseInt(request.getParameter("pU"));
 		int quantité = Integer.parseInt(request.getParameter("qte"));
 		int catégorie = Integer.parseInt(request.getParameter("cat"));
-		Map<String,String> erreurs = new HashMap<String,String>();
+		
 		String resultat;
+		Map<String,String> erreurs = new HashMap<String,String>();
 		
 		try {
 			validationNomination(designation);
@@ -82,6 +91,8 @@ public class MyServlet extends HttpServlet {
 		if(erreurs.isEmpty()) {
 			resultat = "Succès de l'inscription";
 			
+			cc.ajouterArticle(new Article(designation, prixUnitaire, quantité, catégorie));
+			
 			request.getRequestDispatcher("/inventaire.jsp").forward(request, response);
 		}else {
 			resultat = "Échec d'inscription";
@@ -90,7 +101,7 @@ public class MyServlet extends HttpServlet {
 		request.setAttribute("erreurs", erreurs);
 		request.setAttribute("resultat", resultat);
 		// Redirection 
-		request.getRequestDispatcher("/inventaire.jsp#creaMod").forward(request, response);
+		request.getRequestDispatcher("/inventaire.jsp").forward(request, response);
 	}
 	
 	public void validationNonInferieur(int entier) throws Exception {
@@ -156,6 +167,7 @@ public class MyServlet extends HttpServlet {
 		}else {
 			resultat = "Échec d'inscription";
 		}
+		
 		request.setAttribute("erreurs", erreurs);
 		request.setAttribute("resultat", resultat);
 		// Redirection 

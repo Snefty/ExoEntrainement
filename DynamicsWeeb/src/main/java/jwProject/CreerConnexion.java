@@ -77,6 +77,20 @@ public class CreerConnexion {
 		ps.execute();
 		cloturerConnexion();
 	}
+	
+	public void ajouterArticle(Article e) throws SQLException{
+		etablirConnexion();
+		sql = "INSERT INTO article(designation, pu, qty, idCategorie) "
+				+ "VALUES('" + e.getDesignation() + "',"
+				+ "'" + e.getPu() + "',"
+				+ "'" + e.getQty() + "',"
+				+ "'" + e.getIdCategorie() + "'"
+				+ ");";
+		ps = cn.prepareStatement(sql);
+		ps.execute();
+		cloturerConnexion();
+	}
+	
 	public int idLastUsers() throws SQLException {
 		etablirConnexion();
 		int id = 0;
@@ -100,8 +114,8 @@ public class CreerConnexion {
 			articles.put(rs.getInt("idArticle"), new Article(rs.getString("designation"), 
 					rs.getInt("pu"),
 					rs.getInt("qty"),
-					rs.getInt("idCategorie"),
-					rs.getString("designation")));
+					rs.getInt("idCategorie")
+					));
 		}
 		
 		cloturerConnexion();

@@ -49,8 +49,7 @@
 			
 			<div id="creaMod" class="modal">
 				<div class="modal-content">
-					
-					
+							
 			<form action="MyServlet?flag=creation" method="POST">
 				<fieldset>
 				<h4>Creation d'un article</h4>
@@ -131,14 +130,14 @@
 				}
 			</script>
 			
-			<div class="container aqua">
-					 <!-- Structure if tertiaire -->
-						<p class="${empty erreurs ? 'succes' : 'erreur'}">${resultat}</p>
-			</div>
-			
 			<a href="inscription.jsp" class="btn btn-danger"> Supprimer un
 				article </a> <a href="connectionAdmin.jsp" class="btn btn-info">
 				Revenir profil </a>
+		</div>
+		
+		<div class="container aqua">
+					 <!-- Structure if tertiaire -->
+						<p class="${empty erreurs ? 'succes' : 'erreur'}">${resultat}</p>
 		</div>
 	</div>
 

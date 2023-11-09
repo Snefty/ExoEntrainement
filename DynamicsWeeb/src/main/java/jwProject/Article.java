@@ -8,13 +8,12 @@ public class Article {
 	private int idCategorie;
 	private String nameImg;
 
-public Article(String designation, int pu, int qty, int idCategorie, String nameImg) {
+public Article(String designation, int pu, int qty, int idCategorie) {
 	super();
 	this.designation = designation;
 	this.pu = pu;
 	this.qty = qty;
 	this.idCategorie = idCategorie;
-	this.nameImg = nameImg.toLowerCase();
 }
 
 public String getDesignation() {
