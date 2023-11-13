@@ -1,5 +1,12 @@
 @charset "UTF-8";
 
+header{
+	text-align: center;
+}
+
+header a{
+	text-decoration: none;
+}
 
 .modal {
   display: none; /* Hidden by default */
@@ -17,11 +24,11 @@
 
 /* Modal Content */
 .modal-content {
-  background-color: rgb(128, 128, 128);
+  background-color: rgb(255, 0, 0);
   margin: auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
+  width: 90%;
 }
 
 /* The Close Button */

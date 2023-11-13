@@ -43,24 +43,135 @@ public class MyServlet extends HttpServlet {
 			} catch (ServletException | IOException | SQLException e) {
 				e.printStackTrace();
 			}
-		}else if(flag.equalsIgnoreCase("creation")) {
+		}else if(flag.equalsIgnoreCase("creationArticle")) {
 			try {
-				this.doCreer(request, response);
+				this.doCreerArticle(request, response);
+			} catch (ServletException | IOException | SQLException e) {
+				e.printStackTrace();
+			}
+		}else if(flag.equalsIgnoreCase("creationCategorie")) {
+			try {
+				this.doCreerCategorie(request, response);
+			} catch (ServletException | IOException | SQLException e) {
+				e.printStackTrace();
+			}
+		}else if(flag.equalsIgnoreCase("supprArticle")) {
+			try {
+				this.doSupprimerArticle(request, response);
+			} catch (ServletException | IOException | SQLException e) {
+				e.printStackTrace();
+			}
+		}else if(flag.equals("supprCat")) {
+			try {
+				this.doSupprimerCategorie(request, response);
 			} catch (ServletException | IOException | SQLException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	/*
-	private void doSupprimer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
+	private void doSupprimerCategorie(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
+		@SuppressWarnings("unused")
+		HttpSession session = request.getSession(true);
+		
+		int idCategorie = Integer.parseInt(request.getParameter("cat"));
+		
+		if(idCategorie != 0) {
+			cc.supprimerCategorie(idCategorie);
+		}
+
+		request.getRequestDispatcher("/inventaire.jsp").forward(request, response);
+	}
+
+	private void doSupprimerArticle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
+		@SuppressWarnings("unused")
+		HttpSession session = request.getSession(true);
+		
+		int idArticle = Integer.parseInt(request.getParameter("idArticle"));
+		String designation = request.getParameter("suprDes");
+		int categorie = Integer.parseInt(request.getParameter("cat"));
+		
+		String resultat;
+		Map<String,String> erreurs = new HashMap<String,String>();
+		
+		try {
+			validationIdArticleExist(idArticle);
+		}catch(Exception e) {
+			erreurs.put(idArticle + "", e.getMessage());
+		}
+		try {
+			validationDesignationExist(designation);
+		}catch(Exception e) {
+			erreurs.put(idArticle + "", e.getMessage());
+		}
+		
+		if(erreurs.isEmpty()) {
+			resultat = "Succès de l'inscription";
+			
+			if(idArticle != 0) {
+				cc.supprimerArticlesIdArticle(idArticle);
+			}else if(designation == null){
+				cc.supprimerArticlesDesignation(designation);
+			}else {
+				cc.supprimerArticleCategorie(categorie);
+			}
+			
+			request.getRequestDispatcher("/inventaire.jsp").forward(request, response);
+		}else {
+			resultat = "Échec d'inscription";
+		}
+		
+		request.setAttribute("erreurs", erreurs);
+		request.setAttribute("resultat", resultat);
+		// Redirection 
+		request.getRequestDispatcher("/inventaire.jsp").forward(request, response);
+	}
+	
+	private void validationDesignationExist(String designation) throws Exception {
+		if(!cc.isExistDesignation(designation)) {
+			throw new Exception("Ce nom de produit n'existe pas !");
+		}
+	}
+
+	private void validationIdArticleExist(int idArticle) throws SQLException, Exception {
+		if(!cc.isExistIdArticle(idArticle) && idArticle != 0) {
+			throw new Exception("IdArticle n'existe pas dans la base de donnée !!");
+		}
 		
 	}
-	*/
-	
-	// LA PAGE RECREER DES ARTICLES EN BOUCLE FAIRE GAFFE
-	
-	private void doCreer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
+
+	// LA PAGE RECREER DES ARTICLES EN BOUCLE FAIRE GAFFE; CAUSE MODALE
+	private void doCreerCategorie(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+		@SuppressWarnings("unused")
+		HttpSession session = request.getSession(true);
+		
+		String designation = request.getParameter("nom2");
+		
+		String resultat;
+		Map<String,String> erreurs = new HashMap<String,String>();
+		
+		try {
+			validationNomination(designation);
+		}catch(Exception e) {
+			erreurs.put(designation, e.getMessage());
+		}
+		
+		if(erreurs.isEmpty()) {
+			resultat = "Succès de l'inscription";
+			
+			cc.ajouterCategorie(designation);
+			
+		}else {
+			resultat = "Échec d'inscription";
+		}
+		
+		request.setAttribute("erreurs", erreurs);
+		request.setAttribute("resultat", resultat);
+		// Redirection 
+		request.getRequestDispatcher("/inventaire.jsp").forward(request, response);
+	}
+
+	private void doCreerArticle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
 		@SuppressWarnings("unused")
 		HttpSession session = request.getSession(true);
 		
@@ -83,7 +194,17 @@ public class MyServlet extends HttpServlet {
 			erreurs.put(prixUnitaire + "", e.getMessage());
 		}
 		try {
+			validationNonSuperieur(prixUnitaire);
+		}catch(Exception e) {
+			erreurs.put(prixUnitaire + "", e.getMessage());
+		}
+		try {
 			validationNonInferieur(quantité);
+		}catch(Exception e) {
+			erreurs.put(quantité + "", e.getMessage());
+		}
+		try {
+			validationNonSuperieur(quantité);
 		}catch(Exception e) {
 			erreurs.put(quantité + "", e.getMessage());
 		}
@@ -93,7 +214,6 @@ public class MyServlet extends HttpServlet {
 			
 			cc.ajouterArticle(new Article(designation, prixUnitaire, quantité, catégorie));
 			
-			request.getRequestDispatcher("/inventaire.jsp").forward(request, response);
 		}else {
 			resultat = "Échec d'inscription";
 		}
@@ -104,6 +224,12 @@ public class MyServlet extends HttpServlet {
 		request.getRequestDispatcher("/inventaire.jsp").forward(request, response);
 	}
 	
+	private void validationNonSuperieur(int prixUnitaire) throws Exception {
+		if(prixUnitaire > 40000) {
+			throw new Exception("Le nombre doit etre inférieur à 40 000 !!!");
+		}
+	}
+
 	public void validationNonInferieur(int entier) throws Exception {
 		if(entier <= 0) throw new Exception();
 	}

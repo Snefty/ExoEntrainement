@@ -12,11 +12,13 @@ public class CreerConnexion {
 	PreparedStatement ps = null;
 	ResultSet rs = null;
 	String sql = "";
-	
+
 	private final String URL = "jdbc:mysql://localhost:3306/prjCommerce"; 
 	private final String LOGIN = "root"; 
 	private final String MDP = ""; 
-	
+
+	List<Article> articles = new ArrayList<>();
+
 	public Connection etablirConnexion() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -41,7 +43,7 @@ public class CreerConnexion {
 		List<String> lt = new ArrayList<>();
 		etablirConnexion();
 		sql = "SELECT pwd, type FROM compte WHERE login LIKE '" + 
-		login + "'";
+				login + "'";
 		try {
 			rs = st.executeQuery(sql);
 			if(rs.next()) {
@@ -59,12 +61,12 @@ public class CreerConnexion {
 		 * sql = "SELECT * FROM compte WHERE login LIKE '" + cp.getLogin() + "'"; rs =
 		 * st.executeQuery(sql); if(!rs.next()) {
 		 */	
-			sql = "INSERT INTO compte(login,pwd,type,idUsers) VALUES('"
-					+ cp.getLogin() + "','" + cp.getPwd() + "','" 
-					+ cp.getType() + "'," + cp.getIdUsers() + ");";
-			ps = cn.prepareStatement(sql);
-			ps.execute();
-			cloturerConnexion();
+		sql = "INSERT INTO compte(login,pwd,type,idUsers) VALUES('"
+				+ cp.getLogin() + "','" + cp.getPwd() + "','" 
+				+ cp.getType() + "'," + cp.getIdUsers() + ");";
+		ps = cn.prepareStatement(sql);
+		ps.execute();
+		cloturerConnexion();
 		//}
 	}
 	public void ajouterUsers(Users u) throws SQLException {
@@ -77,7 +79,7 @@ public class CreerConnexion {
 		ps.execute();
 		cloturerConnexion();
 	}
-	
+
 	public void ajouterArticle(Article e) throws SQLException{
 		etablirConnexion();
 		sql = "INSERT INTO article(designation, pu, qty, idCategorie) "
@@ -86,6 +88,63 @@ public class CreerConnexion {
 				+ "'" + e.getQty() + "',"
 				+ "'" + e.getIdCategorie() + "'"
 				+ ");";
+		ps = cn.prepareStatement(sql);
+		ps.execute();
+		cloturerConnexion();
+	}
+
+	public void ajouterCategorie(String designation) throws SQLException {
+		etablirConnexion();
+
+		String other = Character.toUpperCase(designation.charAt(0)) + designation.substring(1);
+
+		sql = "INSERT INTO categorie(designation) "
+				+ "VALUES('" + other + "');";
+		ps = cn.prepareStatement(sql);
+		ps.execute();
+		cloturerConnexion();
+	}
+
+	public void supprimerArticlesIdArticle(int idArticle) throws SQLException {
+		etablirConnexion();
+
+		sql = "DELETE FROM article"
+				+ " WHERE idArticle = '"+ idArticle +"';";
+
+		ps = cn.prepareStatement(sql);
+		ps.execute();
+		cloturerConnexion();
+	}
+
+	public void supprimerArticlesDesignation(String designation) throws SQLException {
+		etablirConnexion();
+
+		sql = "DELETE FROM article"
+				+ " WHERE designation LIKE '"+ designation +"';";
+
+		ps = cn.prepareStatement(sql);
+		ps.execute();
+		cloturerConnexion();
+	}
+
+	public void supprimerArticleCategorie(int categorie) throws SQLException {
+		etablirConnexion();
+
+		sql = "DELETE FROM article"
+				+ " WHERE idCategorie = "+ categorie +";";
+
+		ps = cn.prepareStatement(sql);
+		ps.execute();
+		cloturerConnexion();
+	}
+	
+	public void supprimerCategorie(int idCat) throws SQLException {
+		supprimerArticleCategorie(idCat);
+		
+		etablirConnexion();
+
+		sql = "DELETE FROM categorie WHERE idCategorie = "+ idCat +";";
+		
 		ps = cn.prepareStatement(sql);
 		ps.execute();
 		cloturerConnexion();
@@ -102,38 +161,78 @@ public class CreerConnexion {
 		cloturerConnexion();
 		return id;
 	}
-	
-	public Map<Integer,Article> afficherArticle() throws SQLException{
-		Map<Integer,Article> articles = new HashMap<Integer, Article>();
+
+	public void afficherArticle(int choix) throws SQLException{
+		this.articles.clear();
 		etablirConnexion();
-		
-		sql = "Select * FROM article;";
-		rs = st.executeQuery(sql);
+
+		if(choix == 0){
+			sql = "SELECT * FROM `article` ORDER BY `article`.`idArticle` ASC";
+			rs = st.executeQuery(sql);
+
+		}else if(choix == 1){
+			sql = "Select * FROM article ORDER BY designation;";
+			rs = st.executeQuery(sql);
+
+			
+		}
 		
 		while(rs.next()) {
-			articles.put(rs.getInt("idArticle"), new Article(rs.getString("designation"), 
-					rs.getInt("pu"),
-					rs.getInt("qty"),
-					rs.getInt("idCategorie")
-					));
+			this.articles.add(new Article(rs.getInt("idArticle"), rs.getString("designation"), rs.getInt("pu"),
+					rs.getInt("qty"), rs.getInt("idCategorie")));
 		}
 		
 		cloturerConnexion();
-		return articles;
 	}
-	
+
 	public Map<Integer,String> afficherCategorie() throws SQLException{
 		Map<Integer,String> cat = new HashMap<Integer, String>();
 		etablirConnexion();
-		
+
 		sql = "Select * FROM categorie;";
 		rs = st.executeQuery(sql);
-		
+
 		while(rs.next()) {
 			cat.put(rs.getInt("idCategorie"), rs.getString("designation"));
 		}
-		
+
 		cloturerConnexion();
 		return cat;
 	}
+
+	public boolean isExistIdArticle(int idArticle) throws SQLException {
+		etablirConnexion();
+
+		sql = "Select idArticle FROM article;";
+		rs = st.executeQuery(sql);
+
+		while(rs.next()) {
+			if(rs.getInt("idArticle") == idArticle) {
+				return true;
+			}
+		}
+
+		cloturerConnexion();
+		return false;
+	}
+
+	public boolean isExistDesignation(String des) throws SQLException {
+		etablirConnexion();
+
+		sql = "Select designation FROM article;";
+		rs = st.executeQuery(sql);
+
+		while(rs.next()) {
+			if(rs.getString("designation").equals(des)) {
+				return true;
+			}
+		}
+
+		cloturerConnexion();
+		return false;
+	}
+	public List<Article> getArticles() {
+		return articles;
+	}
+
 }
