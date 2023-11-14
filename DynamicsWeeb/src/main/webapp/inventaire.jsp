@@ -6,67 +6,82 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="css/fichierStyle1.css">
+<link rel="stylesheet" href="css/bootstrap.min.css">
 <title>Inventaire</title>
 </head>
 <body>
 
-	<header style="text-align: center;">
+	<header style="display: flex;justify-content: space-between;">
+		<div class="accueil" style="">
+			<h1>
+				<a href="connectionAdmin.jsp" style="text-decoration:none;"> Accueil </a>
+			</h1>
+		</div>
 
-		<h1>
-			<a href="connectionAdmin.jsp"> Accueil </a>
-		</h1>
+		<div>
+			<form action="MyServlet?flag=recherche" method="POST">
+				<input type="text" class="form-control" autofocus="autofocus"
+					id="des" name="des" style="width: 400px" placeholder="chercher....">
+			</form>
+		</div>
 
 	</header>
 
 	<%
-	CreerConnexion cc = new CreerConnexion();
-	int value = 0;
+	CreerConnexion cc = (CreerConnexion)session.getAttribute("cc");
+	
 	%>
 
-	<table class="table table-striped table-hover">
-		<thead>
+	<div style="height: 690px; overflow-y: scroll;">
+		<table class="table table-striped table-hover">
+			<thead>
+				<tr>
+					<th scope="col">
+						<h4>
+							#
+						</h4>
+					</th>
+					<th scope="col"><h4>designation</h4></th>
+					<th scope="col"><h4>Prix unitaire</h4></th>
+					<th scope="col"><h4>Quantité</h4></th>
+					<th scope="col"><h4>Categorie</h4></th>
+				</tr>
+			</thead>
+
+			<%
+			
+			List<Article> art = new ArrayList<Article>();
+			if(cc.isVide()){
+				cc.afficherArticle(0);	
+				art = cc.getArticles();
+			}else{
+				art = cc.getArticles();
+				System.out.println(" Ouaip ^^");
+			}
+			
+			for (Article entry : art) {
+			%>
 			<tr>
-				<th scope="col">
-					<h4>
-						<a href="">
-						#
-						</a>
-					</h4>
-				</th>
-				<th scope="col"><h4>designation</h4></th>
-				<th scope="col"><h4>Prix unitaire</h4></th>
-				<th scope="col"><h4>Quantité</h4></th>
-				<th scope="col"><h4>Categorie</h4></th>
+				<th scope="row"><%=entry.getIdArticle()%></th>
+				<td><%=entry.getDesignation()%></td>
+				<td><%=entry.getPu()%> $</td>
+				<td><%=entry.getQty()%></td>
+				<td><%=entry.getNameCategorie()%></td>
 			</tr>
-		</thead>
 
-		<%
-		cc.afficherArticle(value);
-		List<Article> art = cc.getArticles();
+			<%
+			}
+			System.out.println("\n");
+			%>
+		</table>
+	</div>
 
-		for (Article entry : art) {
-		%>
-
-		<tr>
-			<th scope="row"><%=entry.getIdArticle() %></th>
-			<td><%=entry.getDesignation()%></td>
-			<td><%=entry.getPu()%> $</td>
-			<td><%=entry.getQty()%></td>
-			<td><%=entry.getIdCategorie()%></td>
-		</tr>
-
-		<%
-		}
-		System.out.println("\n");
-		%>
-	</table>
 	<footer
 		style="position: fixed; bottom: 0; width: 100%; text-align: center;">
 		<hr>
 		<div class="container">
-			
+
 			<div class="d-grid gap-3">
 
 				<button id="bouton1" class="btn btn-success">Ajouter un
@@ -86,14 +101,15 @@
 								</div>
 
 								<div class="form-group">
-									<label class="form-label mt-4">Prix unitaire : (&lsaquo; 40 000)</label> <input
-										type="number" class="form-control" min=0 value=0
-										required="required" id="pU" name="pU" placeholder="Enter prix">
+									<label class="form-label mt-4">Prix unitaire :
+										(&lsaquo; 40 000)</label> <input type="number" class="form-control"
+										min=0 value=0 required="required" id="pU" name="pU"
+										placeholder="Enter prix">
 								</div>
 
 								<div class="form-group">
-									<label class="form-label mt-4">Quantité : (&lsaquo; 40 000)</label> <input
-										type="number" class="form-control" min=0 value=0
+									<label class="form-label mt-4">Quantité : (&lsaquo; 40
+										000)</label> <input type="number" class="form-control" min=0 value=0
 										required="required" id="qte" name="qte"
 										placeholder="Enter quantité">
 								</div>
@@ -198,8 +214,7 @@
 
 								<div class="modal-footer">
 									<input type="submit" class="btn btn-primary" value="Accepter">
-									<input type="reset" id="btn3" class="btn btn-info"
-										value="Retour">
+									<input type="reset" id="btn3" class="btn btn-info" value="Retour">
 								</div>
 							</fieldset>
 						</form>
@@ -252,11 +267,14 @@
 				</div>
 
 			</div>
-
-			<div class="container aqua">
-				<!-- Structure if tertiaire -->
-				<p class="${empty erreurs ? 'succes' : 'erreur'}">${erreurs}</p>
+			
+			<!--  
+			<div id="alerte" class="alert alert-dismissible alert-danger">
+  			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  			<p class="${empty erreurs ? 'succes' : 'erreur'}">${erreurs}</p>
 			</div>
+			-->
+			
 		</div>
 	</footer>
 

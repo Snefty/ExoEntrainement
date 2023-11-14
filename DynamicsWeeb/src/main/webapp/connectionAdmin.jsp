@@ -8,9 +8,15 @@
 <title>JakartaEE</title>
 </head>
 <body>
-
+	
+	<%
+		
+		String login = (String)session.getAttribute("login");
+	
+	%>
+	
 	<header style="text-align: center;">
-		<h1>Connection admin</h1>
+		<h1>Bienvenue <%= login %></h1>
 	</header>
 
 	<div class="container">

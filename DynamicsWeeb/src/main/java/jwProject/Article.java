@@ -6,21 +6,27 @@ public class Article {
 	private int pu;
 	private int qty;
 	private int idCategorie;
+	private String nameCategorie;
 	private String nameImg;
 
-	public Article(int idArticle, String designation, int pu, int qty, int idCategorie) {
+	public Article(int idArticle, String designation, int pu, int qty, int idCategorie,String nameCategorie) {
 		super();
 		this.idArticle = idArticle;
 		this.designation = designation;
 		this.pu = pu;
 		this.qty = qty;
 		this.idCategorie = idCategorie;
+		this.nameCategorie = nameCategorie;
 	}
 
 	public Article(String designation, int pu, int qty, int idCategorie) {
-		this(0,designation,pu,qty,idCategorie);
+		this(0,designation,pu,qty,idCategorie,"null");
 	}
 	
+	public String getNameCategorie() {
+		return nameCategorie;
+	}
+
 	public String getDesignation() {
 		return designation;
 	}

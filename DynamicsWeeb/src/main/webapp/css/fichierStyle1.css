@@ -1,13 +1,5 @@
 @charset "UTF-8";
 
-header{
-	text-align: center;
-}
-
-header a{
-	text-decoration: none;
-}
-
 .modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
@@ -24,7 +16,7 @@ header a{
 
 /* Modal Content */
 .modal-content {
-  background-color: rgb(255, 0, 0);
+  background-color: rgb(128, 128, 128);
   margin: auto;
   padding: 20px;
   border: 1px solid #888;

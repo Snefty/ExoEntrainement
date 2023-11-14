@@ -35,6 +35,10 @@ public class MyServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String flag = request.getParameter("flag");
+		
+		HttpSession session = request.getSession(true);
+		session.setAttribute("cc", cc);
+		
 		if(flag.equalsIgnoreCase("connect")) {
 			this.doConnexion(request,response);
 		}else if(flag.equalsIgnoreCase("inscri")) {
@@ -67,9 +71,25 @@ public class MyServlet extends HttpServlet {
 			} catch (ServletException | IOException | SQLException e) {
 				e.printStackTrace();
 			}
+		}else if(flag.equals("recherche")) {
+			try {
+				this.doRecherche(request, response);
+			} catch (ServletException | IOException | SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
+	private void doRecherche(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException, SQLException {
+		String designation = request.getParameter("des");
+		
+		if(designation != null) {
+			cc.afficherArticleDesignation(designation);
+		}
+		
+		request.getRequestDispatcher("/inventaire.jsp").forward(request, response);
+	}
+
 	private void doSupprimerCategorie(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
 		@SuppressWarnings("unused")
 		HttpSession session = request.getSession(true);
@@ -341,16 +361,21 @@ public class MyServlet extends HttpServlet {
 		}
 	}
 	private void doConnexion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession(true);
+		
 		String login = request.getParameter("login");
 		String pwd = request.getParameter("mdp");
-
+		
 		List<String> pwdBDD = cc.verifierCoordonnees(login);
 
 		if(pwdBDD == null) {
 			request.getRequestDispatcher("/connection.jsp").forward(request, response);
 		}else {
 			if(pwd.equals(pwdBDD.get(0))) {
-
+				
+				session.setAttribute("login", login);
+				session.setAttribute("mdp", pwd);
+				
 				if(pwdBDD.get(1).equals("a")) {
 					request.getRequestDispatcher("/connectionAdmin.jsp").forward(request, response);
 				}else {

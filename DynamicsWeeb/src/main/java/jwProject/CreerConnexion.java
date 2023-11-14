@@ -137,19 +137,19 @@ public class CreerConnexion {
 		ps.execute();
 		cloturerConnexion();
 	}
-	
+
 	public void supprimerCategorie(int idCat) throws SQLException {
 		supprimerArticleCategorie(idCat);
-		
+
 		etablirConnexion();
 
 		sql = "DELETE FROM categorie WHERE idCategorie = "+ idCat +";";
-		
+
 		ps = cn.prepareStatement(sql);
 		ps.execute();
 		cloturerConnexion();
 	}
-	
+
 	public int idLastUsers() throws SQLException {
 		etablirConnexion();
 		int id = 0;
@@ -167,19 +167,42 @@ public class CreerConnexion {
 		etablirConnexion();
 
 		if(choix == 0){
-			sql = "SELECT * FROM `article` ORDER BY `article`.`idArticle` ASC";
+			sql = "SELECT a.*, c.designation AS cDes "
+					+ "FROM article AS a JOIN categorie AS c "
+					+ "ON a.idCategorie = c.idCategorie "
+					+ "ORDER BY a.idArticle ASC;";
 			rs = st.executeQuery(sql);
 
 		}else if(choix == 1){
-			sql = "Select * FROM article ORDER BY designation;";
+			sql = "SELECT a.*, c.designation AS cDes "
+					+ "FROM article a JOIN categorie c "
+					+ "ON a.idCategorie = c.idCategorie"
+					+ "ORDER BY a.designation ASC;";
 			rs = st.executeQuery(sql);
 
-			
 		}
-		
+
 		while(rs.next()) {
 			this.articles.add(new Article(rs.getInt("idArticle"), rs.getString("designation"), rs.getInt("pu"),
-					rs.getInt("qty"), rs.getInt("idCategorie")));
+					rs.getInt("qty"), rs.getInt("idCategorie") , rs.getString("cDes")));
+		}
+
+		cloturerConnexion();
+	}
+
+	public void afficherArticleDesignation(String des) throws SQLException {
+		this.articles.clear();
+		etablirConnexion();
+		sql = "SELECT a.*, c.designation AS cDes "
+				+ "FROM article AS a JOIN categorie AS c "
+				+ "ON a.idCategorie = c.idCategorie "
+				+ "WHERE a.designation LIKE '%" + des + "' "
+				+ "ORDER BY a.idArticle ASC;";
+		rs = st.executeQuery(sql);
+
+		while(rs.next()) {
+			this.articles.add(new Article(rs.getInt("idArticle"), rs.getString("designation"), rs.getInt("pu"),
+					rs.getInt("qty"), rs.getInt("idCategorie") , rs.getString("cDes")));
 		}
 		
 		cloturerConnexion();
@@ -200,6 +223,21 @@ public class CreerConnexion {
 		return cat;
 	}
 
+	public Users retournerUsers(String login, String mdp) throws SQLException {
+		etablirConnexion();
+		Users user = null;
+		sql = "Select * FROM users;";
+		rs = st.executeQuery(sql);
+		
+		while(rs.next()) {
+			user = new Users(rs.getString("fname"), rs.getString("lname"), rs.getString("adresse"),
+					rs.getString("tel"), rs.getInt("age"), rs.getString("sexe"));
+		}
+
+		cloturerConnexion();
+		return user;
+	}
+	
 	public boolean isExistIdArticle(int idArticle) throws SQLException {
 		etablirConnexion();
 
@@ -233,6 +271,10 @@ public class CreerConnexion {
 	}
 	public List<Article> getArticles() {
 		return articles;
+	}
+
+	public boolean isVide() {
+		return this.articles.isEmpty();
 	}
 
 }
